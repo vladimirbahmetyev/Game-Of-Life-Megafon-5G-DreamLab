@@ -10,44 +10,98 @@
 
 namespace Bitard_BlockChain_Bot_Unit_Test
 {
-
+    //Класс предмет с приоритетом
     class priorityItem
     {
+        //название предмета
         private string itemName;
+
+        //Приоритет предмета
         private int priority;
-        public priorityItem(string item, int _priority)
+
+        //Конструктор предмета
+        public priorityItem(string _item, int _priority)
         {
-            itemName = item;
+            itemName = _item;
             priority = _priority;
         }
+
+        //Получить имя данного предмета
         public string getItem => itemName;
-        public int
+
+        //Получить приоритет данного предмета в целочисленном эквиваленте
+        public int getPriority => priority;
+
+        //Получить приоритет данного предмета в строчном эквиваленте
+        public string getStringPriority ()
+        {
+            switch(priority)
+            {
+                case 0:
+                    return " когда-нибудь можно купить";
+                case 1:
+                    return " желательно сходить в скором времени";
+                case 2:
+                    return " нужно срочно";
+                case 3:
+                    return " вопрос жизни и смерти";
+                case 4:
+                    return " мы умрем без этого";
+                default:
+                    return "";
+            }
+        }
     }
 
 
     class staff
     {
-        private List<string> listOfItems;
-        public staff() => listOfItems = new List<string>();
+        //Голова списка
+        private List<priorityItem> listOfItems;
+
+        //Конструктор списка
+        public staff() => listOfItems = new List<priorityItem>();
 
 
         /// <summary>
         /// Adding new Item
         /// </summary>
         /// <param name="newItem"></param>
-        public void addItem(string newItem) => listOfItems.Add(newItem);
+        public void addItem(string newItem,, int priority) => listOfItems.Add(new priorityItem( newItem, priority));
 
-        public void deleteItem(string item) => listOfItems.Remove(item);
 
+        //Удаляет элемент из списка
+        public void deleteItem(string item)
+        {
+            priorityItem deleteItem = null;
+            foreach (priorityItem templeItem in listOfItems)
+            {
+                if (templeItem.getItem == item)
+                {
+                    deleteItem = templeItem;
+                }
+            }
+            if (null != deleteItem)
+            {
+                listOfItems.Remove(deleteItem);
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        //Возвращает список в виде string
         public string getListOfItems()
         {
             string temple = "";
-            foreach(string item in listOfItems)
+            foreach(priorityItem item in listOfItems)
             {
-                temple = temple + item + "\n";
+                temple = temple + item + "c приоритетом " + item.getStringPriority() +  "\n";
             }
             return temple;
         }
+
         //GetSize of list
         public int getSize => listOfItems.Count;
     }

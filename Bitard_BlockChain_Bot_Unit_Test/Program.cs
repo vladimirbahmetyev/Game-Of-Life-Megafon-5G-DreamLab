@@ -30,6 +30,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //Initilaze bor API
         static ITelegramBotClient botClient;
 
+        //Запуск бота
         public static void Main(string[] args)
         {
             botClient = new TelegramBotClient("666764887:AAENxCN5kKWXtFjCfv6dVTCH6S8oXxJOJgg");
@@ -135,6 +136,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 }
 
                 //addiingNewItem
+                //Придумать как добавить предмет в 2 этапа (название + приоритет) 
                 if (state == 2)
                 {
                     if (e.Message.Text.Length == 0)
