@@ -17,12 +17,12 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //myOwnNumberOfChat 347955632
         //EgorId 429664470
         //OlyaId 243390057
-        //DialogState
 
-        static int state = 0;
+        //DialogState
         //State 0 = zeroState
         //State 1 = Adding new User
         //State 2 addingNewItem
+        static int state = 0;
 
         //Users List
         static Queue<User> usersList = new Queue<User>();
@@ -75,6 +75,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 {
                     await botClient.SendPhotoAsync(e.Message.Chat, "https://pp.userapi.com/c846122/v846122367/8b1da/oM0jrFvVu8Y.jpg");
                 }
+
                 //Show User_2
                 if (e.Message.Text == "/showBogdan" && state == 0)
                 {
@@ -128,6 +129,14 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     }
                 }
 
+                //addiingNewItem
+                //Придумать как добавить предмет в 2 этапа (название + приоритет) 
+                if (state == 2 && e.Message.Text.Length != 0)
+                {
+                    setPriorityInline(botsItemList, e, e.Message.Text);
+                    state = 0;
+                }
+
                 //addNewItemToList
                 if (e.Message.Text == "/addItemToList" && state == 0)
                 {
@@ -135,21 +144,12 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     await botClient.SendTextMessageAsync(e.Message.Chat, "Что нужно купить?)");
                 }
 
-                //addiingNewItem
-                //Придумать как добавить предмет в 2 этапа (название + приоритет) 
-                if (state == 2)
+                //Нужно сделать красивое удаление (inline query)
+                if(e.Message.Text == "/deleteItem" && state == 0)
                 {
-                    if (e.Message.Text.Length == 0)
-                    {
-                        await botClient.SendTextMessageAsync(e.Message.Chat, "Твою душу не купить, сорян:(");
-                    }
-                    else
-                    {
-                        botsItemList.addItem(e.Message.Text);                        
-                        await botClient.SendTextMessageAsync(e.Message.Chat, e.Message.Text + "успешно добавлена в список покупок");
-                        state = 0;
-                    }
+
                 }
+
             }
         }
 
@@ -276,7 +276,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                         if (!checkingUser.isUserVoited)
                         {
                             await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Ваша реакция учтена");
-                            Console.WriteLine("Пользователь согласился");
                             checkingUser.hasVoted();
                             positiveCount++;
                         }
@@ -294,7 +293,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                         if (!checkingUser.isUserVoited)
                         {
                             await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Ваша реакция учтена");
-                            Console.WriteLine("Пользователь не согласился");
                             checkingUser.hasVoted();
                         }
                         else
@@ -302,12 +300,93 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                             await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Вы уже голосовали");
                         }
                     }
-                };
+                }
             };
 
             //Time for Asking other users
             Thread.Sleep(1000 * 60 * 30);
             return 2 <= positiveCount;
         }
+
+
+        //Inline опрос по поводу приоритета
+        static void setPriorityInline(staff itemsList, MessageEventArgs e, string item)
+        {
+            var keyboard = new InlineKeyboardMarkup(
+            new InlineKeyboardButton[][]
+            {
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData("когда-нибудь можно купить","0")
+                },
+                 new[]
+                {
+                    InlineKeyboardButton.WithCallbackData("желательно сходить в скором времени","1")
+                },
+                  new[]
+                {
+                    InlineKeyboardButton.WithCallbackData("нужно срочно","2")
+                },
+                   new[]
+                {
+                    InlineKeyboardButton.WithCallbackData("вопрос жизни и смерти","3")
+                },
+                    new[]
+                {
+                    InlineKeyboardButton.WithCallbackData("мы умрем без этого","4")
+                },
+            });
+            botClient.SendTextMessageAsync(e.Message.Chat, "Какой приоритет у этой покупки?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, keyboard);
+
+            botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
+
+            {
+                var message = ev.CallbackQuery.Message;
+                switch (ev.CallbackQuery.Data)
+                {
+                    case "0":
+                        itemsList.addItem(item, 0);
+                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                        break;
+                    case "1":
+                        itemsList.addItem(item, 1);
+                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                        break;
+                    case "2":
+                        itemsList.addItem(item, 2);
+                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                        break;
+                    case "3":
+                        itemsList.addItem(item, 3);
+                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                        break;
+                    case "4":
+                        itemsList.addItem(item, 4);
+                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                        break;
+                    default:
+                        break;
+
+                }               
+            };
+
+        }
     }
 }
+
+/*
+  switch(priority)
+            {
+                case 0:
+                    return " когда-нибудь можно купить";
+                case 1:
+                    return " желательно сходить в скором времени";
+                case 2:
+                    return " нужно срочно";
+                case 3:
+                    return " вопрос жизни и смерти";
+                case 4:
+                    return " мы умрем без этого";
+                default:
+                    return "";
+            }*/

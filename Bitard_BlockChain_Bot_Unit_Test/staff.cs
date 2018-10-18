@@ -26,6 +26,17 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             priority = _priority;
         }
 
+        public priorityItem(string _item)
+        {
+            itemName = _item;
+            priority = -1;
+        }
+
+        public  void setPiority(int _priority)
+        {
+            priority = _priority;
+        }
+
         //Получить имя данного предмета
         public string getItem => itemName;
 
@@ -67,8 +78,26 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         /// Adding new Item
         /// </summary>
         /// <param name="newItem"></param>
-        public void addItem(string newItem,, int priority) => listOfItems.Add(new priorityItem( newItem, priority));
+        public void addItem(string newItem,int priority) => listOfItems.Add(new priorityItem(newItem, priority));
 
+        /// <summary>
+        /// Adding new item without priority
+        /// </summary>
+        /// <param name="newItem"></param>
+        public void addItem(string newItem) => listOfItems.Add(new priorityItem(newItem));
+
+
+        //Установить приоритет элементу с приоритетом -1
+        public void setPriotiyFirstItem(int _priority)
+        {
+            foreach( priorityItem temple in listOfItems)
+            {
+                if(temple.getPriority == -1)
+                {
+                    temple.setPiority(_priority);
+                }
+            }
+        }
 
         //Удаляет элемент из списка
         public void deleteItem(string item)
@@ -90,6 +119,8 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 return;
             }
         }
+
+        public priorityItem getTop => listOfItems[0];
 
         //Возвращает список в виде string
         public string getListOfItems()
