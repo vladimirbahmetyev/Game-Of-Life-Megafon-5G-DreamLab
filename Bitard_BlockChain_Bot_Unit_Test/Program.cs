@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
-using Telegram.Bot.Types;
-using System.ComponentModel;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Bitard_BlockChain_Bot_Unit_Test
@@ -49,9 +45,10 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             if (e.Message.Text != null)
             {
                 //Help comand
+                //Может записать inline кнопками?
                 if (e.Message.Text == "/help" && state == 0)
                 {
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "/AddUser \n /ShowUser \n /showEgor \n /showBogdan \n /showSeva \n /Test \n /getId");
+                    await botClient.SendTextMessageAsync(e.Message.Chat, "/AddUser \n /ShowUser \n /showEgor \n /showBogdan \n /showSeva \n /Test \n /getId /getStaffList \n /addItemToList\n, /deleteItem\n");
                     Console.WriteLine(e.Message.Chat.Id);
                 }
 
@@ -147,11 +144,20 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 //Нужно сделать красивое удаление (inline query)
                 if(e.Message.Text == "/deleteItem" && state == 0)
                 {
+                    var temple = botsItemList.getListInlineKeyBoard();
+                    await botClient.SendTextMessageAsync(e.Message.Chat, "Какой предмет вы хотите удалить?",Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, temple);
 
+                    botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
+
+                    {
+                        //сделать callback как номер элемента в списке?
+                        botsItemList.deleteItemAt(Int32.Parse(ev.CallbackQuery.Message.Text));
+                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет удален");
+                    };
                 }
-
             }
         }
+    
 
         //CleanBlock
         static async void CleanRem()
@@ -390,3 +396,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 default:
                     return "";
             }*/
+            /*сделать фабрику для производства модулей для прл обработки пользователей
+              сделать с=отдельный файл для callback ибо возможны коллизии
+              */

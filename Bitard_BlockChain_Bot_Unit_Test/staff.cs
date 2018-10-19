@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Telegram.Bot.Types.ReplyMarkups;
 
 /// <summary>
 /// 0 необходимо в скором времени
@@ -54,7 +55,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     return " желательно сходить в скором времени";
                 case 2:
                     return " нужно срочно";
-                case 3:
+                case 3:C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\staff.cs
                     return " вопрос жизни и смерти";
                 case 4:
                     return " мы умрем без этого";
@@ -120,6 +121,10 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             }
         }
 
+        //Удаления элемента на определенной позиции
+        public void deleteItemAt(int number) => listOfItems.RemoveAt(number);
+
+
         public priorityItem getTop => listOfItems[0];
 
         //Возвращает список в виде string
@@ -135,5 +140,25 @@ namespace Bitard_BlockChain_Bot_Unit_Test
 
         //GetSize of list
         public int getSize => listOfItems.Count;
+
+        //Придумать как динамически добавлять кнопки
+        public InlineKeyboardMarkup getListInlineKeyBoard()
+        {
+            return null;
+        }
+
+        private InlineKeyboardButton[][] GetInlineKeyboard()
+        {
+            var keyBoardInline = new InlineKeyboardButton[1][];
+            var keyBoardButtons = new InlineKeyboardButton[listOfItems.Count];
+            for(int i = 0; i < listOfItems.Count;i++)
+            {
+                keyBoardButtons[i] = new InlineKeyboardButton
+                {
+                    Text = ??
+                }
+            }
+            return null;
+        }
     }
 }
