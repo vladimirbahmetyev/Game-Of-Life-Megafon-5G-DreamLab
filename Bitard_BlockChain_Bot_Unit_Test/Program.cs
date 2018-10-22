@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -23,6 +24,10 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //Users List
         static Queue<User> usersList = new Queue<User>();
 
+        //StaffList
+        static staff botsItemList = new staff();
+
+
         //Initilaze bor API
         static ITelegramBotClient botClient;
 
@@ -33,22 +38,21 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             var me = botClient.GetMeAsync().Result;
             botClient.OnMessage += Bot_OnMessage;
             botClient.StartReceiving();
-            Task CleanTask = new Task(CleanRem);
-            CleanTask.Start();
+            //Task CleanTask = new Task(CleanRem);
+            //CleanTask.Start();
             Thread.Sleep(int.MaxValue);
         }
 
         //Checking Message and Dialog
         static async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
-            staff botsItemList = new staff();
             if (e.Message.Text != null)
             {
                 //Help comand
                 //Может записать inline кнопками?
                 if (e.Message.Text == "/help" && state == 0)
                 {
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "/AddUser \n /ShowUser \n /showEgor \n /showBogdan \n /showSeva \n /Test \n /getId /getStaffList \n /addItemToList\n, /deleteItem\n");
+                    await botClient.SendTextMessageAsync(e.Message.Chat, "/AddUser\n /ShowUser\n /showEgor\n /showBogdan \n /showSeva \n /getId\n /getStaffList \n /addItemToList\n /deleteItem\n");
                     Console.WriteLine(e.Message.Chat.Id);
                 }
 
@@ -58,7 +62,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     User temple = new User(e.Message.Text, e.Message.Chat.Id);
                     usersList.Enqueue(temple);
                     state = 0;
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "User has been added");
+                    await botClient.SendTextMessageAsync(e.Message.Chat, "Пользователь добавлен");
                 }
 
                 //Getid
@@ -92,14 +96,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     state = 1;
                 }
 
-                //TestFunc
-                if (e.Message.Text == "/Test")
-                {
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "first ");
-                    Thread.Sleep(100);
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "second");
-                }
-
                 //ShowLastUser
                 if (e.Message.Text == "/ShowUser" && state == 0)
                 {
@@ -118,7 +114,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 {
                     if (botsItemList.getSize == 0)
                     {
-                        await botClient.SendTextMessageAsync(e.Message.Chat, "List is empty");
+                        await botClient.SendTextMessageAsync(e.Message.Chat, "Список пуст");
                     }
                     else
                     {
@@ -144,14 +140,14 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 //Нужно сделать красивое удаление (inline query)
                 if(e.Message.Text == "/deleteItem" && state == 0)
                 {
-                    var temple = botsItemList.getListInlineKeyBoard();
+                    var temple = botsItemList.getInlineKeyboard;
                     await botClient.SendTextMessageAsync(e.Message.Chat, "Какой предмет вы хотите удалить?",Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, temple);
 
                     botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
 
                     {
                         //сделать callback как номер элемента в списке?
-                        botsItemList.deleteItemAt(Int32.Parse(ev.CallbackQuery.Message.Text));
+                        botsItemList.deleteItemAt(Int32.Parse(ev.CallbackQuery.Data));
                         await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет удален");
                     };
                 }
@@ -316,7 +312,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
 
 
         //Inline опрос по поводу приоритета
-        static void setPriorityInline(staff itemsList, MessageEventArgs e, string item)
+        async static void setPriorityInline(staff itemsList, MessageEventArgs e, string item)
         {
             var keyboard = new InlineKeyboardMarkup(
             new InlineKeyboardButton[][]
@@ -342,38 +338,42 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     InlineKeyboardButton.WithCallbackData("мы умрем без этого","4")
                 },
             });
-            botClient.SendTextMessageAsync(e.Message.Chat, "Какой приоритет у этой покупки?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, keyboard);
+
+            await botClient.SendTextMessageAsync(e.Message.Chat, "Какой приоритет у этой покупки?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, keyboard);
 
             botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
 
             {
                 var message = ev.CallbackQuery.Message;
-                switch (ev.CallbackQuery.Data)
+                if (!botsItemList.isInStaff(item))
                 {
-                    case "0":
-                        itemsList.addItem(item, 0);
-                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                        break;
-                    case "1":
-                        itemsList.addItem(item, 1);
-                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                        break;
-                    case "2":
-                        itemsList.addItem(item, 2);
-                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                        break;
-                    case "3":
-                        itemsList.addItem(item, 3);
-                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                        break;
-                    case "4":
-                        itemsList.addItem(item, 4);
-                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                        break;
-                    default:
-                        break;
+                    switch (ev.CallbackQuery.Data)
+                    {
+                        case "0":
+                            itemsList.addItem(item, 0);
+                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                            break;
+                        case "1":
+                            itemsList.addItem(item, 1);
+                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                            break;
+                        case "2":
+                            itemsList.addItem(item, 2);
+                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                            break;
+                        case "3":
+                            itemsList.addItem(item, 3);
+                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                            break;
+                        case "4":
+                            itemsList.addItem(item, 4);
+                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
+                            break;
+                        default:
+                            break;
 
-                }               
+                    }
+                }
             };
 
         }

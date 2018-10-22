@@ -55,7 +55,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     return " желательно сходить в скором времени";
                 case 2:
                     return " нужно срочно";
-                case 3:C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\staff.cs
+                case 3:
                     return " вопрос жизни и смерти";
                 case 4:
                     return " мы умрем без этого";
@@ -81,13 +81,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         /// <param name="newItem"></param>
         public void addItem(string newItem,int priority) => listOfItems.Add(new priorityItem(newItem, priority));
 
-        /// <summary>
-        /// Adding new item without priority
-        /// </summary>
-        /// <param name="newItem"></param>
-        public void addItem(string newItem) => listOfItems.Add(new priorityItem(newItem));
-
-
         //Установить приоритет элементу с приоритетом -1
         public void setPriotiyFirstItem(int _priority)
         {
@@ -98,6 +91,19 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     temple.setPiority(_priority);
                 }
             }
+        }
+
+        //Проверяет есть ли предмет в списке
+        public bool isInStaff(string item)
+        {
+            foreach(priorityItem templeItem in listOfItems)
+            {
+                if(templeItem.getItem == item)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         //Удаляет элемент из списка
@@ -133,7 +139,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             string temple = "";
             foreach(priorityItem item in listOfItems)
             {
-                temple = temple + item + "c приоритетом " + item.getStringPriority() +  "\n";
+                temple = temple + item.getItem + " c приоритетом " + item.getStringPriority() +  "\n";
             }
             return temple;
         }
@@ -141,24 +147,25 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //GetSize of list
         public int getSize => listOfItems.Count;
 
-        //Придумать как динамически добавлять кнопки
-        public InlineKeyboardMarkup getListInlineKeyBoard()
-        {
-            return null;
-        }
 
-        private InlineKeyboardButton[][] GetInlineKeyboard()
+        
+        //преобразовать расположение кнопок с горизонтального на вертикальное
+        private InlineKeyboardButton[][] createInlineKeyboard()
         {
-            var keyBoardInline = new InlineKeyboardButton[1][];
+            var keyBoardInline = new InlineKeyboardButton[listOfItems.Count,1];
             var keyBoardButtons = new InlineKeyboardButton[listOfItems.Count];
-            for(int i = 0; i < listOfItems.Count;i++)
+            for (int i = 0; i < listOfItems.Count; i++)
             {
                 keyBoardButtons[i] = new InlineKeyboardButton
                 {
-                    Text = ??
-                }
+                    Text = listOfItems[i].getItem.ToString() + " c приоритетом " + listOfItems[i].getStringPriority(),
+                    CallbackData = i.ToString(),
+                };
             }
-            return null;
+            keyBoardInline[0] = keyBoardButtons;
+            return keyBoardInline;
         }
+
+        public InlineKeyboardMarkup getInlineKeyboard => new InlineKeyboardMarkup(createInlineKeyboard());
     }
 }

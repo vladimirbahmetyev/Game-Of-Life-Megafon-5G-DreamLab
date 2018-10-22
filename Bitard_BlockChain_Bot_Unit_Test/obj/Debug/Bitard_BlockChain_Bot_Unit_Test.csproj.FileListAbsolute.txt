@@ -18,3 +18,13 @@ C:\Users\Владимир\Desktop\Bitard_BlockChain_Bot_Unit_Test\Bitard_BlockCh
 C:\Users\Владимир\Desktop\Bitard_BlockChain_Bot_Unit_Test\Bitard_BlockChain_Bot_Unit_Test\obj\Debug\Bitard_BlockChain_Bot_Unit_Test.csprojResolveAssemblyReference.cache
 C:\Users\Владимир\Desktop\Bitard_BlockChain_Bot_Unit_Test\Bitard_BlockChain_Bot_Unit_Test\obj\Debug\Bitard_BlockChain_Bot_Unit_Test.exe
 C:\Users\Владимир\Desktop\Bitard_BlockChain_Bot_Unit_Test\Bitard_BlockChain_Bot_Unit_Test\obj\Debug\Bitard_BlockChain_Bot_Unit_Test.pdb
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\bin\Debug\Bitard_BlockChain_Bot_Unit_Test.exe.config
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\bin\Debug\Bitard_BlockChain_Bot_Unit_Test.exe
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\bin\Debug\Bitard_BlockChain_Bot_Unit_Test.pdb
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\bin\Debug\Telegram.Bot.dll
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\bin\Debug\Telegram.Bot.xml
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\obj\Debug\Bitard_BlockChain_Bot_Unit_Test.csprojResolveAssemblyReference.cache
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\obj\Debug\Bitard_BlockChain_Bot_Unit_Test.exe
+C:\Users\Владимир\Desktop\BitardsBotGItKracken\BitardsBotTgm\Bitard_BlockChain_Bot_Unit_Test\obj\Debug\Bitard_BlockChain_Bot_Unit_Test.pdb

@@ -51,6 +51,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="botCallBacks.cs" />
+    <Compile Include="BotsQueries.cs" />
     <Compile Include="ClassUser.cs" />
     <Compile Include="CleanBlock.cs" />
     <Compile Include="Program.cs" />
