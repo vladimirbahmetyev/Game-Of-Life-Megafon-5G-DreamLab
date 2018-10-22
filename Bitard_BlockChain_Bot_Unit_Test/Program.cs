@@ -31,6 +31,49 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //Initilaze bor API
         static ITelegramBotClient botClient;
 
+        //Кнопки команд
+        static InlineKeyboardMarkup commandkeyBoard = new InlineKeyboardMarkup(
+                new InlineKeyboardButton[][]
+                {
+                    new[]
+                    {
+                        //Positive Reaction
+                        InlineKeyboardButton.WithCallbackData("Покажи Егора","showEgor"),
+                    },
+                    new[]
+                    {
+                        //Positive Reaction
+                        InlineKeyboardButton.WithCallbackData("Покажи Севу","showSeva"),
+                    },
+                    new[]
+                    {
+                        //Positive Reaction
+                        InlineKeyboardButton.WithCallbackData("Покажи Богдана","showBogdan"),
+                    },
+                    new[]
+                    {
+                        //Positive Reaction
+                        InlineKeyboardButton.WithCallbackData("Получить ID","getId"),
+                    },
+                    new[]
+                    {
+                        //Positive Reaction
+                        InlineKeyboardButton.WithCallbackData("Получить список товаров","getItemList"),
+                    },
+                    new[]
+                    {
+                        //Positive Reaction
+                        InlineKeyboardButton.WithCallbackData("Добавить товар в список","addNewItem"),
+                    },
+                    new[]
+                    {
+                        //Positive Reaction
+                        InlineKeyboardButton.WithCallbackData("Удалить товар из списка","deleteItem"),
+                    },
+                });
+
+        //Обработка кнопок команд
+
         //Запуск бота
         public static void Main(string[] args)
         {
@@ -38,6 +81,71 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             var me = botClient.GetMeAsync().Result;
             botClient.OnMessage += Bot_OnMessage;
             botClient.StartReceiving();
+
+            //CallBackFromAsking
+            botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
+
+            {
+                switch(ev.CallbackQuery.Data)
+                {
+                    case "showEgor":
+                        await botClient.SendPhotoAsync(ev.CallbackQuery.Message.Chat, "https://pp.userapi.com/c846122/v846122367/8b1da/oM0jrFvVu8Y.jpg");
+                        await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
+                        break;
+                    case "showSeva":
+                        await botClient.SendPhotoAsync(ev.CallbackQuery.Message.Chat, "https://pp.userapi.com/c824202/v824202167/183d3e/S2DcqEvIIKg.jpg");
+                        await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
+                        break;
+                    case "showBogdan":
+                        await botClient.SendPhotoAsync(ev.CallbackQuery.Message.Chat, "https://pp.userapi.com/c830708/v830708039/1890f7/ehrKDFthYI4.jpg");
+                        await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
+                        break;
+                    case "getId":
+                        await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, ev.CallbackQuery.Message.Chat.Id.ToString());
+                        await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
+                        break;
+                    case "getItemList":
+                        if (botsItemList.getSize == 0)
+                        {
+                            await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, "Список пуст");
+                            await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
+                        }
+                        else
+                        {
+                            await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, botsItemList.getListOfItems());
+                        }
+                        break;
+                    case "addNewItem":
+                        //Не забывть добавить добавление элемента
+                        await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, "Что нужно купить?)");
+                        state = 1;
+                        break;
+                        //Разобраться с вылетом аля добавить три элемента, удалить второй, третий(программа вылетает)
+                    case "deleteItem" :
+                        if (!(botsItemList.getSize == 0))
+                        {
+                            var temple = botsItemList.getInlineKeyboard;
+                            await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, "Какой предмет вы хотите удалить?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, temple);
+
+                            botClient.OnCallbackQuery += async (object sc_2, Telegram.Bot.Args.CallbackQueryEventArgs ev_2) =>
+
+                            {
+                                //Исключение неверный формат
+                                botsItemList.deleteItemAt(Int32.Parse(ev_2.CallbackQuery.Data));
+                                await botClient.AnswerCallbackQueryAsync(ev_2.CallbackQuery.Id, "Предмет удален");
+                                await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
+                            };
+                        }
+                        else
+                        {
+                            await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, "Список пуст");
+                            await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            };
             //Task CleanTask = new Task(CleanRem);
             //CleanTask.Start();
             Thread.Sleep(int.MaxValue);
@@ -52,10 +160,17 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 //Может записать inline кнопками?
                 if (e.Message.Text == "/help" && state == 0)
                 {
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "/AddUser\n /ShowUser\n /showEgor\n /showBogdan \n /showSeva \n /getId\n /getStaffList \n /addItemToList\n /deleteItem\n");
+                    await botClient.SendTextMessageAsync(e.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
                     Console.WriteLine(e.Message.Chat.Id);
                 }
-
+                else
+                {
+                    if (state == 0)
+                    {
+                        await botClient.SendTextMessageAsync(e.Message.Chat, "Введите /help чтобы увидеть все возможности бота");
+                    }
+                }
+                /*
                 //Input name new user
                 if (state == 1)
                 {
@@ -64,78 +179,16 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     state = 0;
                     await botClient.SendTextMessageAsync(e.Message.Chat, "Пользователь добавлен");
                 }
-
-                //Getid
-                if (e.Message.Text == "/getId")
-                {
-                    await botClient.SendTextMessageAsync(e.Message.Chat, e.Message.Chat.Id.ToString());
-                }
-
-                //Show User_1
-                if (e.Message.Text == "/showEgor" && state == 0)
-                {
-                    await botClient.SendPhotoAsync(e.Message.Chat, "https://pp.userapi.com/c846122/v846122367/8b1da/oM0jrFvVu8Y.jpg");
-                }
-
-                //Show User_2
-                if (e.Message.Text == "/showBogdan" && state == 0)
-                {
-                    await botClient.SendPhotoAsync(e.Message.Chat, "https://pp.userapi.com/c830708/v830708039/1890f7/ehrKDFthYI4.jpg");
-                }
-
-                //Show User_3
-                if (e.Message.Text == "/showSeva" && state == 0)
-                {
-                    await botClient.SendPhotoAsync(e.Message.Chat, "https://pp.userapi.com/c824202/v824202167/183d3e/S2DcqEvIIKg.jpg");
-                }
-
-                //Change state to Added User
-                if (e.Message.Text == "/AddUser" && state == 0)
-                {
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "Input User's Name");
-                    state = 1;
-                }
-
-                //ShowLastUser
-                if (e.Message.Text == "/ShowUser" && state == 0)
-                {
-                    if (usersList.Count == 0)
-                    {
-                        await botClient.SendTextMessageAsync(e.Message.Chat, "There is no users");
-                    }
-                    else
-                    {
-                        await botClient.SendTextMessageAsync(e.Message.Chat, usersList.Peek().getName);
-                    }
-                }
-
-                //getItemsList
-                if (e.Message.Text == "/getStaffList" && state == 0)
-                {
-                    if (botsItemList.getSize == 0)
-                    {
-                        await botClient.SendTextMessageAsync(e.Message.Chat, "Список пуст");
-                    }
-                    else
-                    {
-                        await botClient.SendTextMessageAsync(e.Message.Chat, botsItemList.getListOfItems());
-                    }
-                }
+                */
 
                 //addiingNewItem
-                if (state == 2 && e.Message.Text.Length != 0)
+                //Придумать когда снова выдавать commandButtons
+                if (state == 1 && e.Message.Text.Length != 0)
                 {
                     setPriorityInline(botsItemList, e, e.Message.Text);
                     state = 0;
                 }
-
-                //addNewItemToList
-                if (e.Message.Text == "/addItemToList" && state == 0)
-                {
-                    state = 2;
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "Что нужно купить?)");
-                }
-
+                /*
                 //Нужно сделать красивое удаление (inline query)
                 if(e.Message.Text == "/deleteItem" && state == 0)
                 {
@@ -156,7 +209,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                     {
                         await botClient.SendTextMessageAsync(e.Message.Chat, "Список пуст");
                     }
-                }
+                }*/
             }
         }
     

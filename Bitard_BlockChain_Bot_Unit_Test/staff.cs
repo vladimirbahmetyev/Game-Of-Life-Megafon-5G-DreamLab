@@ -68,7 +68,11 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         /// Adding new Item
         /// </summary>
         /// <param name="newItem"></param>
-        public void addItem(string newItem, int priority) => listOfItems.Add(new priorityItem(newItem, priority));
+        public void addItem(string newItem, int priority)
+        {
+            listOfItems.Add(new priorityItem(newItem, priority));
+            listOfItems.Sort((priorityItem first,priorityItem second) => (first.getPriority.CompareTo(second.getPriority)));
+        }
 
         //Проверяет есть ли предмет в списке
         public bool isInStaff(string item)
