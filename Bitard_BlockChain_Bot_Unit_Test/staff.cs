@@ -27,17 +27,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             priority = _priority;
         }
 
-        public priorityItem(string _item)
-        {
-            itemName = _item;
-            priority = -1;
-        }
-
-        public  void setPiority(int _priority)
-        {
-            priority = _priority;
-        }
-
         //Получить имя данного предмета
         public string getItem => itemName;
 
@@ -79,26 +68,14 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         /// Adding new Item
         /// </summary>
         /// <param name="newItem"></param>
-        public void addItem(string newItem,int priority) => listOfItems.Add(new priorityItem(newItem, priority));
-
-        //Установить приоритет элементу с приоритетом -1
-        public void setPriotiyFirstItem(int _priority)
-        {
-            foreach( priorityItem temple in listOfItems)
-            {
-                if(temple.getPriority == -1)
-                {
-                    temple.setPiority(_priority);
-                }
-            }
-        }
+        public void addItem(string newItem, int priority) => listOfItems.Add(new priorityItem(newItem, priority));
 
         //Проверяет есть ли предмет в списке
         public bool isInStaff(string item)
         {
-            foreach(priorityItem templeItem in listOfItems)
+            foreach (priorityItem templeItem in listOfItems)
             {
-                if(templeItem.getItem == item)
+                if (templeItem.getItem == item)
                 {
                     return true;
                 }
@@ -128,9 +105,20 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         }
 
         //Удаления элемента на определенной позиции
-        public void deleteItemAt(int number) => listOfItems.RemoveAt(number);
+        public void deleteItemAt(int number)
+        {
+            if (number < listOfItems.Capacity)
+            {
+                listOfItems.RemoveAt(number);
+            }
+            else
+            {
+                return;
+            }
+        }
 
 
+        //Возвращает значение с головы списка
         public priorityItem getTop => listOfItems[0];
 
         //Возвращает список в виде string
@@ -147,25 +135,25 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //GetSize of list
         public int getSize => listOfItems.Count;
 
-
-        
-        //преобразовать расположение кнопок с горизонтального на вертикальное
+        //построить вертикальные query кнопки
         private InlineKeyboardButton[][] createInlineKeyboard()
         {
-            var keyBoardInline = new InlineKeyboardButton[listOfItems.Count,1];
-            var keyBoardButtons = new InlineKeyboardButton[listOfItems.Count];
+            var keyBoardIncolumn = new InlineKeyboardButton[listOfItems.Count][];
             for (int i = 0; i < listOfItems.Count; i++)
             {
-                keyBoardButtons[i] = new InlineKeyboardButton
+                var keyBoardButton = new InlineKeyboardButton[1];
+                keyBoardButton[0] = new InlineKeyboardButton
                 {
                     Text = listOfItems[i].getItem.ToString() + " c приоритетом " + listOfItems[i].getStringPriority(),
                     CallbackData = i.ToString(),
                 };
+                keyBoardIncolumn[i] = keyBoardButton;
+                
             }
-            keyBoardInline[0] = keyBoardButtons;
-            return keyBoardInline;
+            return keyBoardIncolumn;
         }
 
+        //Сконструировать композицию кнопок
         public InlineKeyboardMarkup getInlineKeyboard => new InlineKeyboardMarkup(createInlineKeyboard());
     }
 }

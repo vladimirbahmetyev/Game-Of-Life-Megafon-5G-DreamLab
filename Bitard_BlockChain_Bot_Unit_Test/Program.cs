@@ -123,7 +123,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 }
 
                 //addiingNewItem
-                //Придумать как добавить предмет в 2 этапа (название + приоритет) 
                 if (state == 2 && e.Message.Text.Length != 0)
                 {
                     setPriorityInline(botsItemList, e, e.Message.Text);
@@ -140,16 +139,23 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 //Нужно сделать красивое удаление (inline query)
                 if(e.Message.Text == "/deleteItem" && state == 0)
                 {
-                    var temple = botsItemList.getInlineKeyboard;
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "Какой предмет вы хотите удалить?",Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, temple);
-
-                    botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
-
+                    if (!(botsItemList.getSize == 0))
                     {
+                        var temple = botsItemList.getInlineKeyboard;
+                        await botClient.SendTextMessageAsync(e.Message.Chat, "Какой предмет вы хотите удалить?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, temple);
+
+                        botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
+
+                        {
                         //сделать callback как номер элемента в списке?
                         botsItemList.deleteItemAt(Int32.Parse(ev.CallbackQuery.Data));
-                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет удален");
-                    };
+                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет удален");
+                        };
+                    }
+                    else
+                    {
+                        await botClient.SendTextMessageAsync(e.Message.Chat, "Список пуст");
+                    }
                 }
             }
         }
@@ -218,13 +224,13 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                                 isClean = askingAnotherUsers(usersList);                                
                                 if (!isClean)
                                 {
-                                    await botClient.SendTextMessageAsync(CleanUser.getId, "Ты точно ахуел, иди заново прибираться:)");
+                                    await botClient.SendTextMessageAsync(CleanUser.getId, "Ты точно офигел, иди заново прибираться:)");
                                 }
                             }
                             else
                             if (ev.CallbackQuery.Data == "callback2")
                             {
-                                await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Ты че, ахуел? Иди прибираться");
+                                await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Ты че, офигел? Иди прибираться");
                             };
                         };
                     Thread.Sleep(30 * 60 * 1000);
@@ -309,7 +315,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             Thread.Sleep(1000 * 60 * 30);
             return 2 <= positiveCount;
         }
-
 
         //Inline опрос по поводу приоритета
         async static void setPriorityInline(staff itemsList, MessageEventArgs e, string item)
