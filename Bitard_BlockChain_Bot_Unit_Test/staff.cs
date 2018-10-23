@@ -111,7 +111,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //Удаления элемента на определенной позиции
         public void deleteItemAt(int number)
         {
-            if (number < listOfItems.Capacity)
+            if ((number <= listOfItems.Capacity - 1) && (number >= 0) )
             {
                 listOfItems.RemoveAt(number);
             }

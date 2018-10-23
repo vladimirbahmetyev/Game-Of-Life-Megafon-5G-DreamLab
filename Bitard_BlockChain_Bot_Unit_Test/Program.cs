@@ -15,6 +15,12 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //OlyaId 243390057
         //Id  с разных устройств разные?
 
+        /// <summary>
+        /// код для callbacks:
+        ///     для добавления(код приоритета)
+        ///     для удаления(номер элемента)
+        /// </summary>
+
         //DialogState
         //State 0 = zeroState
         //State 1 = Adding new User
@@ -82,7 +88,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             botClient.OnMessage += Bot_OnMessage;
             botClient.StartReceiving();
 
-            //CallBackFromAsking
+            //CallBackFromAskingCommandLine
             botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
 
             {
@@ -116,7 +122,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                         }
                         break;
                     case "addNewItem":
-                        //Не забывть добавить добавление элемента
                         await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, "Что нужно купить?)");
                         state = 1;
                         break;
@@ -125,6 +130,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                         if (!(botsItemList.getSize == 0))
                         {
                             var temple = botsItemList.getInlineKeyboard;
+
                             await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, "Какой предмет вы хотите удалить?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, temple);
 
                             botClient.OnCallbackQuery += async (object sc_2, Telegram.Bot.Args.CallbackQueryEventArgs ev_2) =>
@@ -132,7 +138,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                             {
                                 //Пробное преобразование даты для удаления
                                 int templeInt = 0;
-                                //Исключение неверный формат
                                 if (Int32.TryParse(ev_2.CallbackQuery.Data, out templeInt))
                                 {
                                     botsItemList.deleteItemAt(templeInt);
@@ -151,8 +156,8 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                         break;
                 }
             };
-            //Task CleanTask = new Task(CleanRem);
-            //CleanTask.Start();
+            Task CleanTask = new Task(CleanRem);
+            CleanTask.Start();
             Thread.Sleep(int.MaxValue);
         }
 
@@ -177,7 +182,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 }
                 if (state == 1 && e.Message.Text.Length != 0)
                 {
-                    setPriorityInline(botsItemList, e, e.Message.Text);
+                    addNewItemToList(botsItemList, e, e.Message.Text);
                     state = 0;
                 }
             }
@@ -191,6 +196,9 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             {
                 CleanBlock CleanerReminder = new CleanBlock(usersList);
                 CleanerReminder.setNewDate();
+                Console.WriteLine(CleanerReminder.getData);
+
+                //Ждем пока не придет время
                 while (CleanerReminder.getData > DateTime.Now)
                 {
                     Thread.Sleep(3600000);
@@ -200,7 +208,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 User CleanUser = usersList.Dequeue();
 
                 //Reminder
-                //Может и не нужна?ы
+                //Может и не нужна?
                 await botClient.SendTextMessageAsync(CleanUser.getId, "Завтра твоя очередь убираться");
 
                 //Время до 12 утра субботы
@@ -220,7 +228,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
 
                        //Asking every 3 hours about is job done or not
                         Thread.Sleep(3600000 * 3);
-                        var keyboard = new InlineKeyboardMarkup(
+                        var askingCleanerKeyboard = new InlineKeyboardMarkup(
                         new InlineKeyboardButton[][]
                         {
                         // First row
@@ -234,13 +242,12 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                         },
                         }
                         );
-                        await botClient.SendTextMessageAsync(CleanUser.getId, "Прибрался?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, keyboard);
+
+                        await botClient.SendTextMessageAsync(CleanUser.getId, "Прибрался?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, askingCleanerKeyboard);
 
                         //CallBackFromAskingCleaner
                         botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
-
                         {
-                            var message = ev.CallbackQuery.Message;
                             if (ev.CallbackQuery.Data == "callback1")
                             {
                                 await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Ща проверим");
@@ -256,7 +263,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                                 await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Ты че, офигел? Иди прибираться");
                             };
                         };
-                    Thread.Sleep(30 * 60 * 1000);
                     if (isClean)
                     {
                         i = 12;
@@ -298,7 +304,6 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
 
             {
-                var message = ev.CallbackQuery.Message;
                 if (ev.CallbackQuery.Data == "PositiveCallback")
                 {
                     //проверка голосовал ли пользователь
@@ -334,76 +339,54 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                 }
             };
 
-            //Time for Asking other users
-            Thread.Sleep(1000 * 60 * 30);
+            //Время на опрос других пользователей 60 минут
+            Thread.Sleep(1000 * 60 * 60);
             return 2 <= positiveCount;
         }
 
         //Inline опрос по поводу приоритета
-        async static void setPriorityInline(staff itemsList, MessageEventArgs e, string item)
+        async static void addNewItemToList(staff itemsList, MessageEventArgs e, string item)
         {
-            var keyboard = new InlineKeyboardMarkup(
+            var priorityKeyboard = new InlineKeyboardMarkup(
             new InlineKeyboardButton[][]
             {
                 new[]
                 {
-                    InlineKeyboardButton.WithCallbackData("когда-нибудь можно купить","0")
+                    InlineKeyboardButton.WithCallbackData("когда-нибудь можно купить","-5")
                 },
                  new[]
                 {
-                    InlineKeyboardButton.WithCallbackData("желательно сходить в скором времени","1")
+                    InlineKeyboardButton.WithCallbackData("желательно сходить в скором времени","-4")
                 },
                   new[]
                 {
-                    InlineKeyboardButton.WithCallbackData("нужно срочно","2")
+                    InlineKeyboardButton.WithCallbackData("нужно срочно","-3")
                 },
                    new[]
                 {
-                    InlineKeyboardButton.WithCallbackData("вопрос жизни и смерти","3")
+                    InlineKeyboardButton.WithCallbackData("вопрос жизни и смерти","-2")
                 },
                     new[]
                 {
-                    InlineKeyboardButton.WithCallbackData("мы умрем без этого","4")
+                    InlineKeyboardButton.WithCallbackData("мы умрем без этого","-1")
                 },
             });
 
-            await botClient.SendTextMessageAsync(e.Message.Chat, "Какой приоритет у этой покупки?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, keyboard);
+            await botClient.SendTextMessageAsync(e.Message.Chat, "Какой приоритет у этой покупки?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, priorityKeyboard);
 
             botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
-
             {
-                var message = ev.CallbackQuery.Message;
-                if (!botsItemList.isInStaff(item))
+                int temple = 0;
+                if (!botsItemList.isInStaff(item) && Int32.TryParse(ev.CallbackQuery.Data, out temple))
                 {
-                    switch (ev.CallbackQuery.Data)
+                    if(temple >= -5 && temple <= -1)
                     {
-                        case "0":
-                            itemsList.addItem(item, 0);
-                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                            break;
-                        case "1":
-                            itemsList.addItem(item, 1);
-                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                            break;
-                        case "2":
-                            itemsList.addItem(item, 2);
-                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                            break;
-                        case "3":
-                            itemsList.addItem(item, 3);
-                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                            break;
-                        case "4":
-                            itemsList.addItem(item, 4);
-                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
-                            break;
-                        default:
-                            break;
-
+                        //Приводим к виду где приоритет 0-4
+                        botsItemList.addItem(item, temple + 5);
+                        await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет успешно добавлен");
                     }
                 }
             };
-
         }
     }
 }
