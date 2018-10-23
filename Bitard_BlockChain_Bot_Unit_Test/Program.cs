@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -14,6 +13,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //myOwnNumberOfChat 347955632
         //EgorId 429664470
         //OlyaId 243390057
+        //Id  с разных устройств разные?
 
         //DialogState
         //State 0 = zeroState
@@ -130,10 +130,15 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                             botClient.OnCallbackQuery += async (object sc_2, Telegram.Bot.Args.CallbackQueryEventArgs ev_2) =>
 
                             {
+                                //Пробное преобразование даты для удаления
+                                int templeInt = 0;
                                 //Исключение неверный формат
-                                botsItemList.deleteItemAt(Int32.Parse(ev_2.CallbackQuery.Data));
-                                await botClient.AnswerCallbackQueryAsync(ev_2.CallbackQuery.Id, "Предмет удален");
-                                await botClient.SendTextMessageAsync(ev.CallbackQuery.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
+                                if (Int32.TryParse(ev_2.CallbackQuery.Data, out templeInt))
+                                {
+                                    botsItemList.deleteItemAt(templeInt);
+                                    await botClient.AnswerCallbackQueryAsync(ev_2.CallbackQuery.Id, "Предмет удален");
+                                    await botClient.SendTextMessageAsync(ev_2.CallbackQuery.Message.Chat, ":)", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, commandkeyBoard);
+                                }
                             };
                         }
                         else
@@ -170,46 +175,11 @@ namespace Bitard_BlockChain_Bot_Unit_Test
                         await botClient.SendTextMessageAsync(e.Message.Chat, "Введите /help чтобы увидеть все возможности бота");
                     }
                 }
-                /*
-                //Input name new user
-                if (state == 1)
-                {
-                    User temple = new User(e.Message.Text, e.Message.Chat.Id);
-                    usersList.Enqueue(temple);
-                    state = 0;
-                    await botClient.SendTextMessageAsync(e.Message.Chat, "Пользователь добавлен");
-                }
-                */
-
-                //addiingNewItem
-                //Придумать когда снова выдавать commandButtons
                 if (state == 1 && e.Message.Text.Length != 0)
                 {
                     setPriorityInline(botsItemList, e, e.Message.Text);
                     state = 0;
                 }
-                /*
-                //Нужно сделать красивое удаление (inline query)
-                if(e.Message.Text == "/deleteItem" && state == 0)
-                {
-                    if (!(botsItemList.getSize == 0))
-                    {
-                        var temple = botsItemList.getInlineKeyboard;
-                        await botClient.SendTextMessageAsync(e.Message.Chat, "Какой предмет вы хотите удалить?", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, 0, temple);
-
-                        botClient.OnCallbackQuery += async (object sc, Telegram.Bot.Args.CallbackQueryEventArgs ev) =>
-
-                        {
-                        //сделать callback как номер элемента в списке?
-                        botsItemList.deleteItemAt(Int32.Parse(ev.CallbackQuery.Data));
-                            await botClient.AnswerCallbackQueryAsync(ev.CallbackQuery.Id, "Предмет удален");
-                        };
-                    }
-                    else
-                    {
-                        await botClient.SendTextMessageAsync(e.Message.Chat, "Список пуст");
-                    }
-                }*/
             }
         }
     
