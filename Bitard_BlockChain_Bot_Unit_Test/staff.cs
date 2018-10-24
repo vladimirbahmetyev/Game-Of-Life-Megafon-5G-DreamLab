@@ -12,7 +12,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 namespace Bitard_BlockChain_Bot_Unit_Test
 {
     //Класс предмет с приоритетом
-    class priorityItem
+    class PriorityItem
     {
         //название предмета
         private string itemName;
@@ -21,7 +21,7 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         private int priority;
 
         //Конструктор предмета
-        public priorityItem(string _item, int _priority)
+        public PriorityItem(string _item, int _priority)
         {
             itemName = _item;
             priority = _priority;
@@ -54,14 +54,14 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         }
     }
 
-
-    class staff
+    //Класс список предметов
+    class Staff
     {
         //Голова списка
-        private List<priorityItem> listOfItems;
+        private List<PriorityItem> listOfItems;
 
         //Конструктор списка
-        public staff() => listOfItems = new List<priorityItem>();
+        public Staff() => listOfItems = new List<PriorityItem>();
 
 
         /// <summary>
@@ -70,14 +70,15 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         /// <param name="newItem"></param>
         public void addItem(string newItem, int priority)
         {
-            listOfItems.Add(new priorityItem(newItem, priority));
-            listOfItems.Sort((priorityItem first,priorityItem second) => (first.getPriority.CompareTo(second.getPriority)));
+            listOfItems.Add(new PriorityItem(newItem, priority));
+
+            listOfItems.Sort((PriorityItem first,PriorityItem second) => (first.getPriority.CompareTo(second.getPriority)));
         }
 
         //Проверяет есть ли предмет в списке
         public bool isInStaff(string item)
         {
-            foreach (priorityItem templeItem in listOfItems)
+            foreach (PriorityItem templeItem in listOfItems)
             {
                 if (templeItem.getItem == item)
                 {
@@ -90,8 +91,8 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //Удаляет элемент из списка
         public void deleteItem(string item)
         {
-            priorityItem deleteItem = null;
-            foreach (priorityItem templeItem in listOfItems)
+            PriorityItem deleteItem = null;
+            foreach (PriorityItem templeItem in listOfItems)
             {
                 if (templeItem.getItem == item)
                 {
@@ -121,15 +122,14 @@ namespace Bitard_BlockChain_Bot_Unit_Test
             }
         }
 
-
         //Возвращает значение с головы списка
-        public priorityItem getTop => listOfItems[0];
+        public PriorityItem getTop => listOfItems[0];
 
         //Возвращает список в виде string
         public string getListOfItems()
         {
             string temple = "";
-            foreach(priorityItem item in listOfItems)
+            foreach(PriorityItem item in listOfItems)
             {
                 temple = temple + item.getItem + " c приоритетом " + item.getStringPriority() +  "\n";
             }

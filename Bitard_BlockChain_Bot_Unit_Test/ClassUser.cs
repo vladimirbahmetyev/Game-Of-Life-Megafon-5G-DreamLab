@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bitard_BlockChain_Bot_Unit_Test
 {
-    class User
+    public class User
     {
         //User's Name
         private string name;
@@ -17,8 +17,11 @@ namespace Bitard_BlockChain_Bot_Unit_Test
         //Relations List
         private List<int> relations;
 
+        //Id пользователя
         private long ChatId;
 
+
+        //Голосовал ли пользователь?
         private bool isVoted;
 
         /// <summary>
