@@ -1,0 +1,6 @@
+C:\Users\Vladimir\Desktop\Game-Of-Life-Megafon-5G-DreamLab\Game Of Life\Game Of Life\bin\Release\Game Of Life.exe
+C:\Users\Vladimir\Desktop\Game-Of-Life-Megafon-5G-DreamLab\Game Of Life\Game Of Life\bin\Release\Game Of Life.pdb
+C:\Users\Vladimir\Desktop\Game-Of-Life-Megafon-5G-DreamLab\Game Of Life\Game Of Life\obj\Release\Game Of Life.csprojAssemblyReference.cache
+C:\Users\Vladimir\Desktop\Game-Of-Life-Megafon-5G-DreamLab\Game Of Life\Game Of Life\obj\Release\Game Of Life.csproj.CoreCompileInputs.cache
+C:\Users\Vladimir\Desktop\Game-Of-Life-Megafon-5G-DreamLab\Game Of Life\Game Of Life\obj\Release\Game Of Life.exe
+C:\Users\Vladimir\Desktop\Game-Of-Life-Megafon-5G-DreamLab\Game Of Life\Game Of Life\obj\Release\Game Of Life.pdb
