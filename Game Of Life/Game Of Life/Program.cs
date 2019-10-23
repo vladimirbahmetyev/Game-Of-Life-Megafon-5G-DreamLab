@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 
 namespace Game_Of_Life
@@ -7,9 +8,38 @@ namespace Game_Of_Life
     {
         public static void Main()
         {
-            var gameOfLife = new GameOfLife(50);
-            gameOfLife.SetDefaultMap();
+            Console.WriteLine("What type of the game you prefer?\n" +
+                              "Write \"1\" to set lonely glider\n" +
+                              "Write not \"1\" to set chaos on the screen\n");
+            
+            int.TryParse(Console.ReadLine(), out var gameType);
+            Console.Clear();
+            
+            Console.WriteLine("Input size of map\n");
+            if (!int.TryParse(Console.ReadLine(), out var gameSize))
+            {
+                Console.Clear();
+                Console.WriteLine("This is not a size!\n" +
+                                  "will be set default size : 10");
+                gameSize = 10;
+                Thread.Sleep(1500);
+            }
+
+            if (gameSize < 3)
+            {
+                Console.Clear();
+                Console.WriteLine("Size is too small for game of life\n" +
+                                  "it will be set default size : 10");
+                gameSize = 10;
+                Thread.Sleep(1500);
+            }
+            Console.Clear();
+            
+            var gameOfLife = new GameOfLife(gameSize);
+            gameOfLife.SetGameMapType(gameType);
             gameOfLife.Start();
+            Console.WriteLine("Press enter to exit");
+            Console.ReadLine();
         }
     }
 
@@ -26,11 +56,15 @@ namespace Game_Of_Life
 
         public void Start()
         {
-            _cellMap.Print();
-            while (true)
+            _cellMap.Print(0, false);
+            var generation = 1;
+            for(;; generation++)
             {
+                if (!_cellMap.IsMapNotDead())
+                    break;
+                
                 Console.SetCursorPosition(0,0);
-                _cellMap.Print();
+                _cellMap.Print(generation, true);
                 var newMap = new Map(_size);
                 for (var i = 0; i < _size; i++)
                 {
@@ -50,15 +84,14 @@ namespace Game_Of_Life
                 _cellMap = newMap;
                 
                 Thread.Sleep(100);
-
-                /*if (Console.ReadKey(false).Key == ConsoleKey.Escape)
-                {
-                    break;
-                }*/
             }
+            
+            Console.Clear();
+            _cellMap.Print(generation, false);
+            Console.WriteLine("Game ended at {0} generation", generation);
         }
 
-        public void SetDefaultMap() => _cellMap.SetDefaultState();
+        public void SetGameMapType(int gameType) => _cellMap.SetGameState(gameType);
 
         private class Map
          {
@@ -103,9 +136,9 @@ namespace Game_Of_Life
                  return counter;
              }
 
-             public void Print()
+             public void Print (int generation,  bool printGeneration)
              {
-                 var printTemplate = "Press Esc to stop Game Of Life";
+                 var printTemplate =  "";
                  for (var i = 0; i < _size; i++)
                  {
                      for (var j = 0; j < _size; j++)
@@ -114,31 +147,42 @@ namespace Game_Of_Life
                      }
                      printTemplate += '\n';
                  }
+
+                 printTemplate += printGeneration ? "generation {0}\n" : "";
                  
-                 Console.WriteLine(printTemplate);
+                 Console.WriteLine(printTemplate, generation);
              }
 
-             public void SetDefaultState()
+             public void SetGameState(int gameType)
              {
-                 for (var i = 0; i < _size; i++)
+                 switch (gameType)
                  {
-                     for (var j = 0; j < _size; j++)
+                     case 1:
                      {
-                         _cellMap[i, j] = false;
+                         for (var i = 0; i < _size; i++)
+                         {
+                             for (var j = 0; j < _size; j++)
+                             {
+                                 _cellMap[i, j] = false;
+                             }
+                         }
+                         _cellMap[1, 0] = true;
+                         _cellMap[1, 2] = true;
+                         _cellMap[0, 2] = true;
+                         _cellMap[2, 1] = true;
+                         _cellMap[2, 2] = true;
+                         break;
                      }
+                     default: break;
                  }
-                 //Minus
-                 /*_cellMap[1, 0] = true;
-                 _cellMap[1, 1] = true;
-                 _cellMap[1, 2] = true;*/
-                 
+
+
                  //Glider
-                 _cellMap[1, 0] = true;
-                 _cellMap[1, 2] = true;
-                 _cellMap[0, 2] = true;
-                 _cellMap[2, 1] = true;
-                 _cellMap[2, 2] = true;
+                 
              }
+
+             public bool IsMapNotDead()=> _cellMap.Cast<bool>().Any(cell => cell);
+             
          }
     }
 }
