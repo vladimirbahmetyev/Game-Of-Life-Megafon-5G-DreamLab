@@ -8,7 +8,7 @@
 * В противном случае, если соседей меньше двух или больше трёх, клетка умирает («от одиночества» или «от перенаселённости»).
 
 ## Как ~~Играть~~ Смотреть?
-1. Запустить файл Game of Life.exe в папке Game-Of-Life-Megafon-5G-DreamLab/Game Of Life/Game Of Life/bin/Debug/
+1. Запустить файл Game of Life.exe в папке Game-Of-Life-Megafon-5G-DreamLab/Game Of Life/Game Of Life/bin/Release/
 2. Выбрать стандартный шаблон (Ввести 1 или что угодно)
 3. Выбрать размер поля (минимум 3)
 4. Смотреть
